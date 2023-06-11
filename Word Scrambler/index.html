@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Word Scrambler</title>
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+input[type="text"] {
+  padding: 5px;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+#output {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  display: inline-block;
+  cursor: pointer;
+}
+
+#output:hover {
+  background-color: #e6e6e6;
+}
+
+</style>
+</head>
+<body>
+  <h1>Word Scrambler</h1>
+  <input type="text" id="inputWord" placeholder="Enter a word">
+  <button onclick="scrambleWord()">Scramble</button>
+  <div id="output" onclick="copyToClipboard()" title="Click to copy"></div>
+
+  <script>
+function scrambleWord() {
+  var input = document.getElementById("inputWord").value;
+  var output = document.getElementById("output");
+
+  // Check if the input word is empty
+  if (input.trim() === "") {
+    output.textContent = "Please enter a word.";
+    return;
+  }
+
+  // Scramble the word
+  var scrambled = scrambleLetters(input);
+
+  // Show the scrambled word with animation
+  animateText(scrambled, output);
+
+  // Reset the output for each new scramble
+  output.textContent = scrambled;
+  output.title = "Click to copy";
+}
+
+function scrambleLetters(string) {
+  var a = string.split("");
+  var n = a.length;
+
+  for (var i = n - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i];
+    a[i] = a[j];
+    a[j] = tmp;
+  }
+
+  return a.join("");
+}
+
+function animateText(text, outputElement) {
+  var animationFrames = text.length; // Number of animation frames
+  var animationSpeed = 200; // Animation speed in milliseconds
+  var currentFrame = 0;
+
+  var intervalId = setInterval(function() {
+    var scrambled = scrambleLetters(text.substring(0, currentFrame + 1));
+    outputElement.textContent = scrambled;
+    currentFrame++;
+
+    if (currentFrame === animationFrames) {
+      clearInterval(intervalId);
+    }
+  }, animationSpeed);
+}
+
+function copyToClipboard() {
+  var outputElement = document.getElementById("output");
+  var text = outputElement.textContent;
+
+  var tempElement = document.createElement("textarea");
+  tempElement.value = text;
+  document.body.appendChild(tempElement);
+  tempElement.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempElement);
+
+  outputElement.title = "Copied!";
+
+  // Display "Successfully copied!" for 1 second
+  var copiedMessage = document.createElement("span");
+  copiedMessage.textContent = " Successfully copied!";
+  outputElement.appendChild(copiedMessage);
+
+  setTimeout(function() {
+    outputElement.removeChild(copiedMessage);
+    outputElement.title = "Click to copy";
+  }, 1000);
+}
+</script>
+</body>
+</html>
